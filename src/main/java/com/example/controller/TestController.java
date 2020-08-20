@@ -5,9 +5,13 @@
  */
 package com.example.controller;
 
+import com.alibaba.excel.support.ExcelTypeEnum;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.example.entity.Organization;
+import com.example.entity.TestVo;
+import com.example.util.excel.ExcelException;
+import com.example.util.excel.ExcelUtil;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexResponse;
@@ -32,6 +36,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -172,15 +177,16 @@ public class TestController {
 
         return ll;
     }
+
     @ResponseBody
     @RequestMapping(value = "updateData")
-    public void  updateData(Organization organization){
+    public void updateData(Organization organization) {
 
-        Map<String,String> map = new HashMap<>();
-        map.put("id","147852");
-        map.put("organizationName","这是测试es使用2");
-        map.put("img","es.img");
-        map.put("hasHealthImg","0");
+        Map<String, String> map = new HashMap<>();
+        map.put("id", "147852");
+        map.put("organizationName", "这是测试es使用2");
+        map.put("img", "es.img");
+        map.put("hasHealthImg", "0");
 
         client.prepareUpdate(index, type, organization.getId()).setDoc(map)
                 .execute().actionGet();
@@ -188,23 +194,22 @@ public class TestController {
     }
 
     /**
-     *              索引    类型名   _id  (可以不传,自动生成20位的_id)
+     * 索引    类型名   _id  (可以不传,自动生成20位的_id)
      * prepareIndex(index, type,organization.getId())
-     *
      *
      * @param organization
      * @return
      */
     @ResponseBody
     @RequestMapping(value = "addData")
-    public IndexResponse  addData(Organization organization){
+    public IndexResponse addData(Organization organization) {
 
-        Map<String,String> map = new HashMap<>();
-        map.put("id",organization.getId());
-        map.put("organizationName","这是测试es使用");
-        map.put("img","es.img");
-        map.put("hasHealthImg","0");
-        IndexResponse aa=  client.prepareIndex(index, type,organization.getId()).setSource(map)
+        Map<String, String> map = new HashMap<>();
+        map.put("id", organization.getId());
+        map.put("organizationName", "这是测试es使用");
+        map.put("img", "es.img");
+        map.put("hasHealthImg", "0");
+        IndexResponse aa = client.prepareIndex(index, type, organization.getId()).setSource(map)
                 .execute().actionGet();
 
         return aa;
@@ -212,19 +217,26 @@ public class TestController {
     }
 
 
-
     @ResponseBody
     @GetMapping(value = "hello")
-    public String sayHello(){
+    public String sayHello() {
         System.out.println("1111111");
         return "hello";
     }
 
 
-    public static void main(String[] args) {
+    //"http://www.tcmap.com.cn/zhejiangsheng/yuhang.html"
+    @ResponseBody
+    @GetMapping(value = "testPc")
+    public void testPc(HttpServletResponse response,String url) {
 
-        System.out.println("aaaaaaa");
-
+        try {
+            List<TestVo> list = TestJsoup.returnAreaAndList(url);
+            ExcelUtil.writeExcel(response, list, list.get(0).getName(), "000", ExcelTypeEnum.XLS, TestVo.class);
+        } catch (ExcelException e) {
+            e.printStackTrace();
+        }
     }
+
 
 }
