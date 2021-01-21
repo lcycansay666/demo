@@ -90,6 +90,16 @@
             <artifactId>jjwt</artifactId>
             <version>0.9.1</version>
         </dependency>
+
+
+        <dependency>
+            <groupId>hik</groupId>
+            <artifactId>artemis-http-client</artifactId>
+            <scope>system</scope>
+            <version>1.0</version>
+            <systemPath>${project.basedir}/src/main/resources/artemis-http-client-1.0-SNAPSHOT.jar</systemPath>
+        </dependency>
+
     </dependencies>
 
     <build>
